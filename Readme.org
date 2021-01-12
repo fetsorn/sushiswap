@@ -1,0 +1,62 @@
+#+TITLE: Readme
+
+A fork of [https://github.com/sushiswap/sushiswap][Sushiswap].
+
+  - SushiToken https://ropsten.etherscan.io/address/0x5922bCb742EC37A9219079997a0156184F96132a
+  - MasterChef https://ropsten.etherscan.io/address/0xfCCafad102EFA1D7853F107327A1085306e3EE46
+  - (Uni|Sushi)swapV2Factory https://ropsten.etherscan.io/address/0x306CB2746e3E6D00B49d053905127ade714CBea2
+  - (Uni|Sushi)swapV2Router02 https://ropsten.etherscan.io/address/0xE96eabAC88810935f7459a66b41A09A719dfA593
+  - SushiBar https://ropsten.etherscan.io/address/0x0299bC1c35e71AA8E8172590399F5C274394b5F9
+  - SushiMaker https://ropsten.etherscan.io/address/0x7a9E3f4609376298c5372487807c833D8E8A81C5
+
+* Changes
+ - Automated deployment with [[https://www.trufflesuite.com/truffle][Truffle]].
+ - Updated constant function formula in [[./contracts/SushiMaker.sol][SushiMaker]]. Lower slippage with a square root function from [[https://github.com/abdk-consulting/abdk-libraries-solidity/blob/master/ABDKMath64x64.sol#L355][ABDKMath]].
+#+html: <p align="center"><img src="https://latex.codecogs.com/gif.latex?\inline&space;\sqrt{x*y}=k" title="\sqrt{x*y}=k" /></p>
+* Deployment
+ - locate ropsten Canonical Weth - 0xc778417e063141139fce010982780140aa0cd5ab
+ - locate ropsten Dai - 0xc778417e063141139fce010982780140aa0cd5ab
+ - deploy SushiSwapV2Factory
+   - PairCodeHash() from SushiSwapV2Factory - 9d68afd3795fe054b2c26c9bfda9526d1263b803ae8f7179911c02c9ea6ff30a
+   - set init hash in UniswapV2Library
+ - deploy SushiSwapV2Router02
+   - address SushiV2Factory
+   - address WETH
+   - deps V2Library
+ - deploy SushiToken
+ - deploy MasterChef
+   - address SushiToken
+   - address dev
+ - deploy SushiBar
+   - address SushiToken
+   - address DAI
+ - deploy SushiMaker
+   - address SushiV2Factory
+   - address SushiBar
+   - address SushiToken
+   - address WETH
+ - deploy SushiRoll
+   - deps SushiV2Router01Old and SushiV2Router01New
+   - deps SushiV2Factory  and SushiV2Library
+ - deploy Timelock
+   - address SushiBar
+   - address admin
+ - deploy SushiBurner
+   - address MasterChef
+   - address SushiToken
+ - deploy Migrator
+   - address MasterChef
+   - address UniV2Factory
+   - address SushiV2Factory
+
+* Tasks
+ - [X] get Dai from Uniswap
+ - [X] add liquidity WETH-DAI to Uniswap
+ - [X] getPair address of WETH-DAI lp token
+ - [X] mint SushiToken
+ - [X] transferOwnership SushiToken to MasterChef
+ - [X] add WETH-DAI pool to MasterChef
+ - [X] deposit WETH-DAI lp token wl
+ - [ ] accrue Sushi
+ - [ ] migrate and burn liquidity
+ - [ ] swap dai from Sushi
