@@ -44,8 +44,8 @@ library UniswapV2Library {
         require(amountIn > 0, 'UniswapV2Library: INSUFFICIENT_INPUT_AMOUNT');
         require(reserveIn > 0 && reserveOut > 0, 'UniswapV2Library: INSUFFICIENT_LIQUIDITY');
         uint amountInWithFee = amountIn.mul(997);
-        uint numerator = amountInWithFee.mul(reserveOut);
-        uint denominator = reserveIn.mul(1000).add(amountInWithFee);
+        uint numerator = amountInWithFee.mul(sqrt(reserveOut));
+        uint denominator = sqrt(reserveIn).mul(1000).add(amountInWithFee);
         amountOut = numerator / denominator;
     }
 
@@ -53,8 +53,8 @@ library UniswapV2Library {
     function getAmountIn(uint amountOut, uint reserveIn, uint reserveOut) internal pure returns (uint amountIn) {
         require(amountOut > 0, 'UniswapV2Library: INSUFFICIENT_OUTPUT_AMOUNT');
         require(reserveIn > 0 && reserveOut > 0, 'UniswapV2Library: INSUFFICIENT_LIQUIDITY');
-        uint numerator = reserveIn.mul(amountOut).mul(1000);
-        uint denominator = reserveOut.sub(amountOut).mul(997);
+        uint numerator = sqrt(reserveIn).mul(amountOut).mul(1000);
+        uint denominator = sqrt(reserveOut).sub(amountOut).mul(997);
         amountIn = (numerator / denominator).add(1);
     }
 
@@ -79,4 +79,35 @@ library UniswapV2Library {
             amounts[i - 1] = getAmountIn(amounts[i], reserveIn, reserveOut);
         }
     }
+
+  /**
+   * Calculate sqrt (x) rounding down, where x is unsigned 256-bit integer
+   * number.
+   *
+   * @param x unsigned 256-bit integer number
+   * @return unsigned 256-bit integer number
+   */
+  function sqrt (uint256 x) private pure returns (uint256) {
+    if (x == 0) return 0;
+    else {
+      uint256 xx = x;
+      uint256 r = 1;
+      if (xx >= 0x100000000000000000000000000000000) { xx >>= 128; r <<= 64; }
+      if (xx >= 0x10000000000000000) { xx >>= 64; r <<= 32; }
+      if (xx >= 0x100000000) { xx >>= 32; r <<= 16; }
+      if (xx >= 0x10000) { xx >>= 16; r <<= 8; }
+      if (xx >= 0x100) { xx >>= 8; r <<= 4; }
+      if (xx >= 0x10) { xx >>= 4; r <<= 2; }
+      if (xx >= 0x8) { r <<= 1; }
+      r = (r + x / r) >> 1;
+      r = (r + x / r) >> 1;
+      r = (r + x / r) >> 1;
+      r = (r + x / r) >> 1;
+      r = (r + x / r) >> 1;
+      r = (r + x / r) >> 1;
+      r = (r + x / r) >> 1; // Seven iterations should be enough
+      return uint256 (x / r);
+    }
+  }
+
 }
