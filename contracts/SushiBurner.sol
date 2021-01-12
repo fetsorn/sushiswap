@@ -17,11 +17,14 @@ interface IMasterChef {
 contract SushiBurner
 {
     uint256 _pid;
+    IMasterChef chef;
+    IERC20 sushi;
     
-    constructor(uint256 pid) public {
+    constructor(uint256 pid, IMasterChef _chef, IERC20 _sushi) public {
+
         _pid = pid;
-        
-        IMasterChef chef = IMasterChef(0xc2EdaD668740f1aA35E4D8f227fB8E17dcA888Cd);
+        chef = _chef;
+        sushi = _sushi;
 
         // Get the address of the token of the MasterChef pool
         (IERC20 lpToken,,,) = chef.poolInfo(pid);
@@ -43,9 +46,7 @@ contract SushiBurner
     
     function harvestAndBurn() public {
         // Harvest SUSHI from MasterChef (has no harvest function so we use a deposit of 0)
-        IMasterChef(0xc2EdaD668740f1aA35E4D8f227fB8E17dcA888Cd).deposit(_pid, 0);
-        
-        IERC20 sushi = IERC20(0x6B3595068778DD592e39A122f4f5a5cF09C90fE2);
+        chef.deposit(_pid, 0);
         
         // Sushi has no burn function and cannot send to 0x0, so we send it to the 0xdead000... address
         sushi.transfer(0xdEad000000000000000000000000000000000000, sushi.balanceOf(address(this)));

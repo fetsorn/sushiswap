@@ -120,8 +120,16 @@ contract SushiBar is ERC20, Ownable {
     string public name = "SushiBar V2";
     string public symbol = "xSUSHI2";
     uint8 public decimals = 18;
-    IERC20 public sushi = IERC20(0x6B3595068778DD592e39A122f4f5a5cF09C90fE2);
-    IERC20 public dai = IERC20(0x6B175474E89094C44Da98b954EedeAC495271d0F);
+    IERC20 public sushi;
+    IERC20 public dai;
+
+    constructor(
+        IERC20 _sushi,
+        IERC20 _dai
+    ) public {
+        sushi = _sushi;
+        dai   = _dai;
+    }
     
     mapping(address => uint256) public startTime;
     mapping(address => uint256) public claimed;

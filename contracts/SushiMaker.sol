@@ -15,10 +15,22 @@ contract SushiMaker {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
-    IUniswapV2Factory public constant factory = IUniswapV2Factory(0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac);
-    address public constant bar = 0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272;
-    address public constant sushi = 0x6B3595068778DD592e39A122f4f5a5cF09C90fE2;
-    address public constant weth = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+    IUniswapV2Factory public factory;
+    address public bar;
+    address public sushi;
+    address public weth;
+
+    constructor(
+        IUniswapV2Factory _factory,
+        address _bar,
+        address _sushi,
+        address _weth
+    ) public {
+        factory = _factory;
+        bar = _bar;
+        sushi = _sushi;
+        weth = _weth;
+    }
 
     function convert(address token0, address token1) public {
         // At least we try to make front-running harder to do.
